@@ -1,0 +1,15 @@
+{
+    "n_layer": 4,
+    "n_head": 4,
+    "n_embd": 128,
+    "block_size": 128,
+    "dropout": 0.1,
+    "batch_size": 64,
+    "max_steps": 3000,
+    "max_lr": 0.001,
+    "warmup_steps": 137,
+    "eval_interval": 300,
+    "seed": 42,
+    "ablation": "batch_size_64",
+    "run_id": "A5"
+}

@@ -1,0 +1,15 @@
+{
+    "run_id": "TEST",
+    "n_layer": 4,
+    "n_head": 4,
+    "n_embd": 128,
+    "block_size": 128,
+    "dropout": 0.1,
+    "batch_size": 32,
+    "max_steps": 3,
+    "max_lr": 0.001,
+    "warmup_steps": 137,
+    "eval_interval": 1,
+    "seed": 42,
+    "ablation": "test"
+}

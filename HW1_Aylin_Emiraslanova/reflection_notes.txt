@@ -1,0 +1,95 @@
+F1 - Most Costly Bug
+
+Bug:
+The tokenizer decoder could raise UnicodeDecodeError when the model generated
+arbitrary byte sequences that did not form valid UTF-8 text.
+
+Symptom:
+Text generation could fail during decoding instead of returning a sample.
+
+How it was fixed:
+The decoder was updated to use UTF-8 decoding with errors="replace".
+This preserves valid UTF-8 text and replaces invalid byte sequences instead
+of crashing.
+
+Verification:
+A round-trip test was performed:
+encode("Hello world! This is a GPT tokenizer test.")
+decode(encoded) == original_text
+
+The test passed.
+
+Relevant file:
+tokenizer.py
+
+Git commit:
+The current Git history does not yet identify a separate commit for this fix.
+
+F2 - Most Surprising Result
+
+The most surprising result was A3, where the learning rate was increased
+from 0.001 to 0.01. I expected the larger learning rate to make training
+unstable, but the model did not diverge.
+
+The baseline M achieved a best validation loss of 3.7872,
+while A3 achieved 3.7621.
+
+This suggests that, in this experiment, a higher learning rate
+did not harm convergence and slightly improved validation performance.
+However, the difference was small and does not prove that a higher
+learning rate is generally better.
+
+F3 - Largest Design Effect
+
+Removing positional embeddings had the largest negative effect
+among the tested ablations.
+
+The baseline M achieved a validation loss of 3.7872,
+while A1 achieved 3.9783, an increase of 0.1911.
+
+This indicates that positional information is important for
+the model to learn the order of tokens in a sequence.
+
+Increasing dropout to 0.2 also worsened performance:
+A4 achieved 3.9545. In contrast, increasing batch size to 64
+improved validation loss to 3.6956.
+
+F4 - Text Generation Analysis
+
+Three samples of 120 new tokens were generated using the L model
+with temperature 0.8.
+
+The generated text contains Shakespeare-like vocabulary, dialogue
+formatting, and character names. However, several limitations
+are visible:
+
+- Grammatical errors and incomplete phrases appear.
+- Semantic coherence is weak in some passages.
+- Words and expressions are sometimes repeated.
+- Characters from different Shakespeare plays appear in the
+  same generated continuation.
+
+These problems may be related to the limited training dataset,
+the model's relatively small capacity, and training for only
+3000 steps. The model learns local language patterns but does
+not consistently maintain long-range semantic coherence.
+
+F5 - Tokenizer Analysis
+
+The first ten BPE merges were:
+1. (101, 32) -> "e "
+2. (116, 104) -> "th"
+3. (116, 32) -> "t "
+4. (115, 32) -> "s "
+5. (100, 32) -> "d "
+6. (44, 32) -> ", "
+7. (111, 117) -> "ou"
+8. (101, 114) -> "er"
+9. (105, 110) -> "in"
+10. (121, 32) -> "y "
+
+These merges show that frequent English character combinations
+and common letter-space patterns are combined into larger tokens.
+
+The validation text contained 111,540 bytes and 46,702 tokens,
+resulting in 2.3883 bytes per token.
